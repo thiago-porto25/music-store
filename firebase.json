@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "build",
+    "site": "music-store-9cab8",
     "headers": [
       {
         "source": "/service-worker.js",
