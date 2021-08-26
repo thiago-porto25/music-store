@@ -83,8 +83,6 @@ function App() {
     if (user) updateCartInDb()
   }, [cart])
 
-  console.log(user)
-
   return (
     <AppContext.Provider value={{ user, signInWithGoogle, signOut }}>
       <GlobalStyle />
