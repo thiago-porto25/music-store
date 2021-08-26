@@ -10,6 +10,7 @@ import * as ROUTES from './constants/Routes'
 
 function App() {
   const [cart, setCart] = useState([])
+
   return (
     <>
       <GlobalStyle />
