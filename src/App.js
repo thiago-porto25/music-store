@@ -10,6 +10,7 @@ import NotFound from './pages/NotFound'
 import Product from './pages/Product'
 import Shop from './pages/Shop'
 import * as ROUTES from './constants/Routes'
+import { appContext as AppContext } from './context/appContext'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCS3EUTzby1m51aWdIZfA0BDT_XEGzpxuo',
@@ -25,13 +26,53 @@ const firestore = firebase.firestore()
 
 function App() {
   const [cart, setCart] = useState([])
+  const [user, setUser] = useState(null)
 
-  function addUser() {
-    firestore.collection('users').add({ test: 'test' })
+  const updateCartInDb = async () => {}
+
+  const signInWithGoogle = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    await auth.signInWithPopup(provider)
+    setUser(auth.currentUser)
+
+    const doesUserExist = await checkIfUserAlreadyExists(auth.currentUser)
+
+    if (!doesUserExist) addNewUser()
+  }
+
+  const signOut = () => {
+    setUser(null)
+    auth.signOut()
+  }
+
+  const checkIfUserAlreadyExists = async (currentUser) => {
+    let data
+
+    await firestore
+      .collection('users')
+      .where('uid', '==', currentUser.uid)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => (data = doc.data()))
+      })
+      .catch((error) => console.log(`Error catching documents: ${error}`))
+
+    return !!data
+  }
+
+  function addNewUser() {
+    firestore.collection('users').add({
+      displayName: user.displayName,
+      photoUrl: user.photoURL,
+      uid: user.uid,
+      cart: cart,
+    })
   }
 
   return (
-    <>
+    <AppContext.Provider
+      value={{ user, signInWithGoogle, signOut, updateCartInDb }}
+    >
       <GlobalStyle />
       <Switch>
         <Route exact path={ROUTES.HOME}>
@@ -50,7 +91,7 @@ function App() {
           <NotFound cart={cart} />
         </Route>
       </Switch>
-    </>
+    </AppContext.Provider>
   )
 }
 
