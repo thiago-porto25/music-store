@@ -97,7 +97,7 @@ function App() {
           <Product cart={cart} setCart={setCart} />
         </Route>
         <Route exact path={ROUTES.CART}>
-          <Cart cart={cart} setCart={setCart} />
+          <Cart cart={cart} setCart={setCart} user={user} />
         </Route>
         <Route exact path={ROUTES.NOT_FOUND}>
           <NotFound cart={cart} />

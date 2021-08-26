@@ -77,6 +77,11 @@ const Line = styled.hr`
   color: #555555;
 `
 
+const Text = styled.p`
+  color: white;
+  font-size: 20px;
+`
+
 const Total = styled.p`
   font-size: 20px;
   font-weight: normal;
@@ -93,7 +98,7 @@ const TotalLabel = styled.label`
   color: white;
 `
 
-export default function Cart({ cart, setCart }) {
+export default function Cart({ cart, setCart, user }) {
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
@@ -136,17 +141,21 @@ export default function Cart({ cart, setCart }) {
           </TotalLabel>
         </Frame>
         <Frame>
-          <Link
-            style={{ pointerEvents: cart[0] === undefined ? 'none' : '' }}
-            to={ROUTES.HOME}
-          >
-            <CheckoutButton
-              disabled={cart[0] === undefined}
-              onClick={() => setCart([])}
+          {!user ? (
+            <Text>You must sign in to go to checkout!</Text>
+          ) : (
+            <Link
+              style={{ pointerEvents: cart[0] === undefined ? 'none' : '' }}
+              to={ROUTES.HOME}
             >
-              Checkout
-            </CheckoutButton>
-          </Link>
+              <CheckoutButton
+                disabled={cart[0] === undefined}
+                onClick={() => setCart([])}
+              >
+                Checkout
+              </CheckoutButton>
+            </Link>
+          )}
         </Frame>
       </Inner>
       <Footer />

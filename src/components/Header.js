@@ -167,6 +167,28 @@ const SignButton = styled.button`
   }
 `
 
+const SignOutButton = styled(SignButton)`
+  background-color: #d8c3a5;
+
+  &:hover {
+    background-color: #e85a4f;
+  }
+
+  @media (max-width: 700px) {
+    background-color: initial;
+    i {
+      color: #d8c3a5;
+    }
+    &:hover {
+      background-color: initial;
+      i {
+        transform: scale(1.1);
+        color: #e85a4f;
+      }
+    }
+  }
+`
+
 const ProfilePicture = styled.img`
   width: 40px;
   height: 40px;
@@ -223,10 +245,10 @@ export default function Header({ cart }) {
       ) : (
         <>
           <ProfilePicture src={user.photoUrl} alt={user.displayName} />
-          <SignButton onClick={signOut}>
+          <SignOutButton onClick={signOut}>
             <p>Sign Out</p>
             <i className="fas fa-sign-out-alt"></i>
-          </SignButton>
+          </SignOutButton>
         </>
       )}
     </Container>
