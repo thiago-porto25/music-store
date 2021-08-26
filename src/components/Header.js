@@ -222,7 +222,7 @@ export default function Header({ cart }) {
         </SignButton>
       ) : (
         <>
-          <ProfilePicture src={user.photoURL} alt={user.displayName} />
+          <ProfilePicture src={user.photoUrl} alt={user.displayName} />
           <SignButton onClick={signOut}>
             <p>Sign Out</p>
             <i className="fas fa-sign-out-alt"></i>

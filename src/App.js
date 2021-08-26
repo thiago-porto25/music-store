@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { globalStyle as GlobalStyle } from './globalStyles'
 import firebase from 'firebase/app'
@@ -28,24 +28,34 @@ function App() {
   const [cart, setCart] = useState([])
   const [user, setUser] = useState(null)
 
-  const updateCartInDb = async () => {}
-
   const signInWithGoogle = async () => {
     const provider = new firebase.auth.GoogleAuthProvider()
     await auth.signInWithPopup(provider)
-    setUser(auth.currentUser)
+    const userData = await getUser(auth.currentUser)
 
-    const doesUserExist = await checkIfUserAlreadyExists(auth.currentUser)
-
-    if (!doesUserExist) addNewUser()
+    if (!userData) {
+      const userInfo = {
+        displayName: auth.currentUser.displayName,
+        photoUrl: auth.currentUser.photoURL,
+        uid: auth.currentUser.uid,
+        cart: cart,
+      }
+      await addNewUser(userInfo)
+      const { docId } = await getUser(auth.currentUser)
+      setUser({ docId, ...userInfo })
+    } else {
+      setUser(userData)
+      setCart(userData.cart)
+    }
   }
 
   const signOut = () => {
+    setCart([])
     setUser(null)
     auth.signOut()
   }
 
-  const checkIfUserAlreadyExists = async (currentUser) => {
+  const getUser = async (currentUser) => {
     let data
 
     await firestore
@@ -53,26 +63,30 @@ function App() {
       .where('uid', '==', currentUser.uid)
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => (data = doc.data()))
+        querySnapshot.forEach(
+          (doc) => (data = { docId: doc.id, ...doc.data() })
+        )
       })
       .catch((error) => console.log(`Error catching documents: ${error}`))
 
-    return !!data
+    return data
   }
 
-  function addNewUser() {
-    firestore.collection('users').add({
-      displayName: user.displayName,
-      photoUrl: user.photoURL,
-      uid: user.uid,
-      cart: cart,
-    })
+  const addNewUser = async (userInfo) => {
+    firestore.collection('users').add(userInfo)
   }
+
+  useEffect(() => {
+    const updateCartInDb = async () => {
+      firestore.collection('users').doc(user.docId).update({ cart: cart })
+    }
+    if (user) updateCartInDb()
+  }, [cart])
+
+  console.log(user)
 
   return (
-    <AppContext.Provider
-      value={{ user, signInWithGoogle, signOut, updateCartInDb }}
-    >
+    <AppContext.Provider value={{ user, signInWithGoogle, signOut }}>
       <GlobalStyle />
       <Switch>
         <Route exact path={ROUTES.HOME}>
