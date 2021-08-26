@@ -9,6 +9,8 @@ import Shop from './pages/Shop'
 import * as ROUTES from './constants/Routes'
 
 function App() {
+  const firebase = window.firebase
+  console.log(firebase)
   const [cart, setCart] = useState([])
 
   return (
