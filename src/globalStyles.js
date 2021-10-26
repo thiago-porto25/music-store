@@ -4,5 +4,6 @@ export const globalStyle = createGlobalStyle`
   html, body {
     margin: 0;
     font-size: 15px;
+    font-family: 'Roboto', sans-serif;
   }
 `
